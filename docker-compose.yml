@@ -1,0 +1,53 @@
+version: '2.4'
+services:
+  reverse_proxy:
+    image: agora_reverse_proxy
+    container_name: agora_reverse_proxy
+    build:
+      context: reverse_proxy
+    mem_limit: 256m
+    restart: unless-stopped
+    ports:
+      - 80:80
+    networks:
+      - agora_network
+    depends_on:
+      - server
+      - ui
+
+  ui:
+    image: agora_ui
+    container_name: agora_ui
+    build:
+      context: ui
+    mem_limit: 1g
+    networks:
+      - agora_network
+    depends_on:
+      - server
+
+  server:
+    image: agora_server
+    container_name: agora_server
+    build:
+      context: server
+    mem_limit: 1g
+    restart: unless-stopped
+    networks:
+      - agora_network
+    depends_on:
+      - mongodb
+    environment:
+      - MONGODB_URI=mongodb://mongodb:27017/agora?retryWrites=true&w=majority
+
+  mongodb:
+    image: mongo:4.2.13-bionic
+    container_name: agora_mongodb
+    restart: unless-stopped
+    mem_limit: 3g
+    networks:
+      - agora_network
+
+networks:
+  agora_network:
+    name: agora_network
