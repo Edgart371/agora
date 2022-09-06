@@ -1,4 +1,4 @@
-# Projet Irongratte
+# Projet Agora
 
 ## Pré-requis
 
